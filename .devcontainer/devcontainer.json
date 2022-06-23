@@ -1,0 +1,80 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
+// https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/debian
+{
+	"name": "pyspark",
+	"build": {
+		"dockerfile": "Dockerfile",
+		"context": "..",
+		"args": { }
+	},
+
+	// Set *default* container specific settings.json values on container create.
+	"settings": { 
+		"terminal.integrated.profiles.linux": {
+			"bash": {
+				"path": "/bin/bash"
+			}
+		}
+	},
+	"containerEnv": {
+		// Add our scripts folder to the python path to fix some issues with pylint
+		"PYTHONPATH": "/usr/local/spark/python/lib/py4j-0.10.9.3-src.zip:/usr/local/spark/python:${containerWorkspaceFolder}/scripts:"
+	},
+	"runArgs": [
+		// Add more environment variables with a .env file here:
+		// "--env-file", "${localWorkspaceFolder}/.devcontainer/.env",
+		// Add this environment variable here so we can use the containerWorkspaceFolder variable
+		"-e", "GOOGLE_APPLICATION_CREDENTIALS=${containerWorkspaceFolder}/.devcontainer/service_account.json"
+	],
+	"customizations": {
+		// Configure properties specific to VS Code.
+		"vscode": {
+			// Set *default* container specific settings.json values on container create.
+			"settings": { 
+				"python.defaultInterpreterPath": "/opt/conda/bin/python",
+				"python.linting.enabled": true,
+				"python.linting.pylintEnabled": true,				
+				"python.linting.pylintPath": "/opt/conda/bin/pylint",
+				"python.testing.pytestEnabled": true,
+				"python.testing.unittestEnabled": false,				
+				"python.testing.pytestArgs": [
+					"tests"
+				]
+			},
+
+			// Add the IDs of extensions you want installed when the container is created.
+			"extensions": [
+				"ms-python.python",
+				"ms-python.vscode-pylance"
+			]
+		}
+	},
+
+	// Add the IDs of extensions you want installed when the container is created.	
+	"extensions": [
+		"ms-python.python",
+		"ms-python.vscode-pylance"
+	],
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+    "forwardPorts": [8888,4040],
+
+	// Uncomment to use the Docker CLI from inside the container. See https://aka.ms/vscode-remote/samples/docker-from-docker.
+	// "mounts": [ "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind" ],
+
+	// Uncomment when using a ptrace-based debugger like C++, Go, and Rust
+	// "runArgs": [ "--cap-add=SYS_PTRACE", "--security-opt", "seccomp=unconfined" ],
+
+	
+	"mounts": [
+		// Add mounts for the docker image here
+		// "source=C:/data,target=/data,type=bind,consistency=cached"
+	  ],
+
+	// Install Poetry Packages at the start
+	// Git trust parent git directory so source control will be recognized, don't set globally, this makes the .gitconfig copy to container fail
+	"postCreateCommand": "poetry install",
+
+	// This is the user defined by the base image jupyter/pyspark-notebook
+	"remoteUser": "jovyan"	
+}
